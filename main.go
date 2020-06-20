@@ -62,9 +62,8 @@ func DeletePersonEndpoint(w http.ResponseWriter, req *http.Request){ //DELETE BY
 	params := mux.Vars(req)
 	for index, item := range people{
 		if item.ID == params["id"]{
-			people = append(people[:index], people[index + 1:]...) 
-			json.NewEncoder(w).Encode(people)
-			return
+			people = append(people[:index], people[index + 1:]...) //añadimos a people todas las persons excepto la de index (... = actualizar)
+			break
 		}
 	}
 	json.NewEncoder(w).Encode(people)
