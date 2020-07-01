@@ -15,7 +15,6 @@ func NewReview(stars int, comment string) *CreateReviewCMD {  //va a retornar un
 		Stars: stars,
 		Comment: comment,
 	}
-
 }
 
 //Test function to validate a review depending on the boundings of the parameters we created

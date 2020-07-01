@@ -1,7 +1,6 @@
 package main
 
 import ( 
-
 	"encoding/json" //to encode to json
 	"log" //to see errors on the server
 	"net/http" //to write the server
@@ -36,7 +35,7 @@ func GetPersonEndpoint(w http.ResponseWriter, req *http.Request){ //w is respons
 			return
 		}
 	}
-	json.NewEncoder(w).Encode(&Person{}) //if we dont find anything we respond with an empty Person json
+	json.NewEncoder(w).Encode(Person{}) //if we dont find anything we respond with an empty Person json
 }
 
 func CreatePersonEndpoint(w http.ResponseWriter, req *http.Request){ //w is response, req is the requesting info
