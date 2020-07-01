@@ -32,9 +32,10 @@ func main(){
 	fmt.Println(p.age)
 	//Pointer
 	i := 7 
-	fmt.Println(&i)
-	inc(&i) //if we want to change the original number (in the same addres), we have to create a pointer in another variable that modifies it in a diferent function
-	fmt.Println(i) 
+	fmt.Println(&i, i)
+	inc(&i) //if we want to change the original number (in the same addres), 
+	//we have to create a pointer in another variable that modifies it in a diferent function
+	fmt.Println(&i, i) 
 
 
 }
@@ -88,6 +89,6 @@ type person struct { //class
 	age int
 }
 
-func inc(x *int) {
+func inc(x *int) { //we dont create any return variable
 	*x++
 }
