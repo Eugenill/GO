@@ -28,6 +28,7 @@ func main() {
 	//Pointers and functions
 	fmt.Println("\nPointer vs Funtions------------------------------------------------------------------")
 	m := &Vertex{1, 2}
+	fmt.Println(m.X)
 	Scale(m, 10)
 	fmt.Println(m.Abs(), m)
 //------------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ func main() {
 	
 	fmt.Printf("%T\n",a.Abs()) //float64 type, as we specified in Abs() float64
 	// In the following line, v is a Vertex (not *Vertex)
-	// and does NOT implement Abser. We add &
+	// and does NOT implement Abser. We have to add &
 	//a = v
 	a = &v //'a' must be a pointer to a Vertex because the Abs method is defined only 
 			//on *Vertex (pointer type)
@@ -79,7 +80,7 @@ func main() {
 	r := Person{"Arthur Dent", 42}
 	z := Person{"Zaphod Beeblebrox", 9001}
 	fmt.Println(r, z) //the fmt package look for the Stringer interface to print values
-	fmt.Printf("%T", r)
+	fmt.Printf("%T\n", r)
 
 //------------------------------------------------------------------------------------------------------
 
@@ -208,6 +209,6 @@ type Person struct {
 	Age  int
 }
 
-func (p Person) String() string { //if we add this method to a type (Person) now the var is also a Stringer type (interface)
+func (p Person) String() string { //we add String() method to Person 
 	return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
 }

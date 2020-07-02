@@ -22,6 +22,8 @@ type CreateReviewCMD struct {
 
 //this function is needed to raise errors in case there is an error in the parameters of the CMD, 
 //which will be the ones that we receive from outside
+
+//METHOD of CreateReviewCMD Struct
 func (cmd *CreateReviewCMD) validate() error { //return error, cmd is a Create... struct type
 	if cmd.Stars < 1 || cmd.Stars > 5 {
 		return errors.New("Stars must be less between 1 and 5")

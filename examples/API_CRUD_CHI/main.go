@@ -2,6 +2,10 @@ package main
 
 // Orginial code: https://itnext.io/building-restful-web-api-service-using-golang-chi-mysql-d85f427dee54
 import (
+    "fmt"
+    "database/sql"
+    "net/http"
+    "encoding/json"
     "github.com/go-chi/chi"
     "github.com/go-chi/chi/middleware" //f any request fails, your app won’t die, you can request again without restarting your app.
     _ "github.com/go-sql-driver/mysql" //driver (_ ) for database/sql, if we import the driver we can use the whole API
@@ -18,16 +22,7 @@ const (
     dbPort = "33066"
 )
 
-//function with the routers, returning the router with new available functionalities
-func routers() *chi.Mux {
-    router.Get("/posts", AllPosts)
-    router.Get("/posts/{id}", DetailPost)
-    router.Post("/posts", CreatePost)
-    router.Put("/posts/{id}", UpdatePost)
-    router.Delete("/posts/{id}", DeletePost)
-    
-    return router
-}
+
 
 /*
 
@@ -47,7 +42,9 @@ func routers() *chi.Mux {
 
 
 func init() { 
-    router = chi.NewRouter() //NewRouter returns a new Mux object (*chi.Mux) that implements the Router interface, so we assign it to router (which a pointer to a chi.Mux)
+    //func NewRouter() *Mux, its like if they did router=&newMux (if NewMux were a struct)
+    router = chi.NewRouter() //NewRouter returns a new Mux object (*chi.Mux) that implements the Router interface, 
+    fmt.Println("%T",router)                       //so we assign it to router (which a pointer to a chi.Mux)
     router.Use(middleware.Recoverer)  //Recoverer is a middleware that recovers from panics, logs the panic (and a
                                       // backtrace), and returns a HTTP 500 (Internal Server Error) status if
                                       // possible. Recoverer prints a request ID if one is provided.
@@ -55,7 +52,7 @@ func init() {
     dbSource := fmt.Sprintf("root:%s@tcp(%s:%s)/%s?charset=utf8",  dbPass, dbHost, dbPort, dbName) //%s for strings, %d for int
                             //username:password@protocol(address)/dbname?param=value
     var err error //error var
-    db, err = sql.Open("mysql", dbSource) //Create the sql db with the name: "mysql" and the source: 
+    db, err = sql.Open("mysql", dbSource) //Create the sql db with the name: "mysql" and the source
     
     catch(err)
 }
@@ -66,6 +63,7 @@ type Post struct {
     Content string `json: "content"`
 }
 
+
 func CreatePost(w http.ResponseWriter, r *http.Request) {
     var post Post
     json.NewDecoder(r.Body).Decode(&post) //we catch the data in the Body of the POST ( r )
@@ -73,13 +71,49 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
                                         //so it is a pointer because we are modifying post itself
 
 
-    query, err := db.Prepare("Insert posts SET title=?, content=?")
+    query, err := db.Prepare("Insert posts SET title=?, content=?") //title=? means we have dynamic title data to
+                                                                    // execute which we will retrieve from post variable
     catch(err)
 
-    _,er := query.Exec(post.Title, post.Content)                                       
+    _,er := query.Exec(post.Title, post.Content)  //here we define the title and content as it is in post                                     
+    catch(er)
+
+    defer query.Close() //DONT FORGET TO CLOSE THE QUERY
+
+    respondwithJSON(w, http.StatusCreated, map[string]string{"message": "succesfully created"})
+}
+
+func UpdatePost(w http.ResponseWriter, req *http.Request) {
+    var post Post
+    id := chi.URLParam(req, "id") //we take the id of the post 
+    json.NewDecoder(req.Body).Decode(&post)
+
+    query, err := db.Prepare("Update posts set title=?, content=? where id=?")
     catch(err)
+    _, er := query.Exec(post.Title, post.Content, id)
+    catch(er)
 
     defer query.Close()
 
-    respondwithJSON(w, http.StatusCreated, map[string]string{"message": "succesfully created"})
+    respondwithJSON(w, http.StatusOK, map[string]string{"message":"update succesfully"})
+}
+
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+
+    query, err := db.Prepare("delete from posts where id=?")
+    catch(err)
+
+    _,er := query.Exec(id)
+    catch(er)
+    query.Close()
+
+    respondwithJSON(w, http.StatusOK, map[string]string{"message":"deleted succesfully"})
+
+}
+
+
+func main() {
+    routers()
+    http.ListenAndServe(":8000", Logger())
 }
