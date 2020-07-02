@@ -47,7 +47,7 @@ func routers() *chi.Mux {
 
 
 func init() { 
-    router = chi.NewRouter() //NewRouter returns a new Mux object that implements the Router interface. We assign it to router
+    router = chi.NewRouter() //NewRouter returns a new Mux object (*chi.Mux) that implements the Router interface, so we assign it to router (which a pointer to a chi.Mux)
     router.Use(middleware.Recoverer)  //Recoverer is a middleware that recovers from panics, logs the panic (and a
                                       // backtrace), and returns a HTTP 500 (Internal Server Error) status if
                                       // possible. Recoverer prints a request ID if one is provided.
@@ -70,6 +70,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
     var post Post
     json.NewDecoder(r.Body).Decode(&post) //we catch the data in the Body of the POST ( r )
                                         //and decode it to our struct model and save it in the post var
+                                        //so it is a pointer because we are modifying post itself
+
 
     query, err := db.Prepare("Insert posts SET title=?, content=?")
     catch(err)
