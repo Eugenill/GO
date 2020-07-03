@@ -1,4 +1,4 @@
-package models
+package test
 
 /*------TESTING-----------------
 Whenever we have a function with a param = (x *testing.T), go test automates the execution of this function

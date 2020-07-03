@@ -33,6 +33,12 @@ func main() {
 	fmt.Println(m.Abs(), m)
 //------------------------------------------------------------------------------------------------------
 	//Interfaces
+	/*
+	An interface is a collection of method signatures that a Type can implement (using methods).
+	Hence interface defines (not declares) the behavior of the object (of the type Type).
+	For example, a 'Dog' can 'walk' and 'bark'. If an interface defines method signatures
+ 	for 'walk' and 'bark' while 'Dog' implements 'walk' and 'bark' methods, then 'Dog' is said to implement that interface.
+	*/
 	fmt.Println("\nInterfaces------------------------------------------------------------------")
 	var a Abser
 	//f := MyFloat(-math.Sqrt2)
