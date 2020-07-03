@@ -18,7 +18,7 @@ var db *sql.DB //db is a DB variable from sql
 //constants for the db
 const (
     dbName = "go-mysql-crud"
-    dbPass = "******"
+    dbPass = "*******"
     dbHost = "localhost"
     dbPort = "3306" //TCP - MySQL clients to the MySQL server (MySQL Protocol)
 )
