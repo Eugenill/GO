@@ -18,7 +18,7 @@ var db *sql.DB //db is a DB variable from sql
 //constants for the db
 const (
     dbName = "go-mysql-crud"
-    dbPass = "********"
+    dbPass = "******"
     dbHost = "localhost"
     dbPort = "3306" //TCP - MySQL clients to the MySQL server (MySQL Protocol)
 )
@@ -112,7 +112,56 @@ func AllPosts(w http.ResponseWriter, r *http.Request) {
     respondwithJSON(w, http.StatusOK, tableData)
 }
 
-    
+func DetailPost(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    rows, err := db.Query("select * from posts")//*sql.rows
+    catch(err)
+    row := db.QueryRow("select * from posts where id=?", id)
+    defer rows.Close()
+    columns, err := rows.Columns() //[id title content]
+    catch(err)
+
+
+    count := len(columns)
+    tableData := make([]map[string]interface{}, 0) //list of maps[string]interface{}, 0 maps initially
+    values := make([]interface{}, count) //list of interfaces = [<nil> <nil> <nil>]
+    valuePtrs := make([]interface{}, count) //pointer of values
+
+   
+    for i := 0; i < count; i++ {
+      valuePtrs[i] = &values[i] //we assign every pointer to every value
+    }
+    row.Scan(valuePtrs...)//Scan(dest ...interface{}) valuePtrs is variadic: https://golang.org/ref/spec#Passing_arguments_to_..._parameters
+    //Scan copies the columns in the current row into the values pointed at by dest. 
+    //The number of values in dest must be the same as the number of columns in Rows.
+    entry := make(map[string]interface{}) //map[]
+    fmt.Println(values)
+    for i, col := range columns {
+        var v interface{}
+        val := values[i]
+        b, ok := val.([]byte)
+        fmt.Println(b)
+        if col== "id" {
+            if ok {
+                v, _ = strconv.Atoi(string(b))
+            } else {
+                v = val
+            }      
+        } else {
+            if ok {
+                v = string(b)
+            } else {
+                v = val
+            }
+        }
+        
+        entry[col] = v //we define {"column": value, ...}
+    }
+    tableData = append(tableData, entry) //append map to the list of maps, for every row
+
+    respondwithJSON(w, http.StatusOK, tableData)
+}  
+
 func CreatePost(w http.ResponseWriter, r *http.Request) {
     var post Post
     json.NewDecoder(r.Body).Decode(&post) //we catch the data in the Body of the POST ( r )
@@ -125,6 +174,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
     catch(err)
 
     _,er := query.Exec(post.ID, post.Title, post.Content)  //here we define the title and content as it is in post                                     
+    //Exec executes a query without returning any rows
     catch(er)
 
     defer query.Close() //DONT FORGET TO CLOSE THE QUERY
