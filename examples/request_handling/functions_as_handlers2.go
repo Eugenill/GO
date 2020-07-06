@@ -5,6 +5,7 @@ import (
   "net/http"
   "time"
 )
+var mux *http.ServeMux
 //The difference is that we are using the timeHandler function to return a handler
 func timeHandler(format string) http.Handler {
   fn := func(w http.ResponseWriter, r *http.Request) {
@@ -35,11 +36,17 @@ func timeHandler(format string) http.HandlerFunc {
 */
 
 func main() {
-  mux := http.NewServeMux()
-
+  mux = http.NewServeMux()
   th := timeHandler(time.RFC1123) //we call the function and return a Handler(Func)
   mux.Handle("/time", th)//We add this handler to the mux
-
   log.Println("Listening...")
-  http.ListenAndServe(":3000", mux)
+  http.ListenAndServe(":3000", logger())
 }
+
+func logger() http.Handler { //small letters as we dont need to export this function
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    log.Println(time.Now(), r.URL, r.Method)
+    mux.ServeHTTP(w, r)
+  })
+}
+

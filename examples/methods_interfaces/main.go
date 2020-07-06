@@ -146,7 +146,9 @@ type MyFloat float64
 
 func (f MyFloat) Abs() float64 { //methods: You can only declare a method with
 								// a receiver whose type is defined in the same package as
-								// the method. You cannot declare a method with a receiver
+								// the method. 
+								
+								//You cannot declare a method with a receiver
 								// whose type is defined in another package (which includes 
 								//the built-in types such as int).
 	if f < 0 {

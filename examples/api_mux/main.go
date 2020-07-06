@@ -64,7 +64,7 @@ func CreatePersonEndpoint(w http.ResponseWriter, req *http.Request){ //w is resp
 	}
 	var person Person //creamos una varible Person
 	_ = json.NewDecoder(req.Body).Decode(&person) //we will find the content in Body, we also have to add a header of COntent-Type: application/json
-	//func (dec *Decoder) Decode(v interface{}) error
+								//func (dec *Decoder) Decode(v interface{}) error
 	//In this case if we dont add the & to person we are not modifying the person, as the function above is not returning the person and we want to modify it
 	person.ID = params["id"]
 	people = append(people, person)
@@ -97,7 +97,7 @@ func main() {
 	//It compares incoming requests against a list of predefined URL paths, 
 	//and calls the associated handler for the path whenever a match is found.
 
-	//http.ServeMux also has the method a ServeHTTP method, meaning that it satisfies the Handler interface. The same that happens with the Stringer. 
+	//http.ServeMux also has the method ServeHTTP, meaning that it satisfies the Handler interface.
 
 	//test people
 	people = append(people, Person{ID:"1", FirstName:"Ryan", LastName:"Wazowsky", Address: &Address{City:"San Francisco", State:"California"}})

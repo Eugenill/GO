@@ -31,7 +31,8 @@ func respondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
 // Logger return log message
 func Logger() http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        fmt.Println(time.Now(), r.Method, r.URL)
-        router.ServeHTTP(w, r) // dispatch the request
+        fmt.Println(time.Now(), r.Method, r.URL) //example: 2020-07-06 09:32:44.634333 +0200 CEST m=+22.456178180 GET /posts
+        router.ServeHTTP(w, r) // dispatch the request, we are dispatching the request to the router, which is who has the handlers to serve the request
     })
 }
+ 
