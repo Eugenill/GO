@@ -5,9 +5,7 @@ import(
 	"fmt"
 	"errors"
 	"math"
-	"io"
-	"strings"
-	"image"
+	
 )
 
 func main(){
@@ -88,6 +86,9 @@ func list() {
 	var a [5]int
 	a[2] = 7
 	fmt.Println(a)
+	for index, value := range a {
+		
+	}
 
 	b := [5]int{1,2,3,4,5}
 	fmt.Println(b)
