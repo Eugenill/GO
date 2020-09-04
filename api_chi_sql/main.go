@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware" //f any request fails, your app won’t die, you can request again without restarting your app.
-	_ "github.com/go-sql-driver/mysql" //driver (_ ) for database/sql, if we import the driver we can use the whole API
+	_ "github.com/lib/pq"
 	"go_examples/api_chi_sql/handlers"
 	"go_examples/api_chi_sql/helper"
 	"go_examples/api_chi_sql/router"
+	"log"
 	"net/http"
 )
 
@@ -18,8 +19,8 @@ var route *chi.Mux // server is a Mux object from Chi
 //constants for the db
 const (
 	dbName = "go-api-sql"
-	dbUser = "*******"
-	dbPass = "*******"
+	dbUser = "postgres"
+	dbPass = "postgres"
 	dbHost = "localhost"
 	dbPort = "5432"
 )
@@ -47,14 +48,17 @@ func init() {
 	route.Use(middleware.Recoverer) //Recoverer is a middleware that recovers from panics, logs the panic (and a
 	// backtrace), and returns a HTTP 500 (Internal Server Error) status if
 	// possible. Recoverer prints a request ID if one is provided.
-	dbSource := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", dbHost, dbPort, dbName, dbUser, dbPass) //%s for strings, %d for int
-	var err error                                                                                                                    //error var
-	handlers.DB, err = sql.Open("postgres", dbSource)                                                                                //Create the sql db with the name: "mysql" and the source
+	dbSource := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", dbHost, dbPort, dbName, dbUser, dbPass)
+	//%s for strings, %d for int
+	var err error                                     //error var
+	handlers.DB, err = sql.Open("postgres", dbSource) //Create the sql db with the name: "mysql" and the source
 	helper.Catch(err)
+	log.Println("Connected to the local DB!")
 }
 
 func main() {
 	router.SetEndpoints(route)
 	err := http.ListenAndServe(":8000", helper.Logger(route))
+
 	helper.Catch(err)
 }
