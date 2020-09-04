@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi"
+	"log"
 	"net/http"
 	"time"
 )
 
 func Catch(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 

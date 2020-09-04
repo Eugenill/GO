@@ -12,9 +12,9 @@ import (
 )
 
 type Post struct {
-	ID      int    `json: "id"`
-	Title   string `json: "title"`
-	Content string `json: "content"`
+	ID      int    `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 var DB *sql.DB //DB is a DB variable from sql
@@ -37,9 +37,10 @@ func AllPosts(w http.ResponseWriter, r *http.Request) {
 		for i := 0; i < count; i++ {
 			valuePtrs[i] = &values[i] //we assign every pointer to every value
 		}
-		rows.Scan(valuePtrs...) //Scan(dest ...interface{}) valuePtrs is variadic: https://golang.org/ref/spec#Passing_arguments_to_..._parameters
+		err = rows.Scan(valuePtrs...) //Scan(dest ...interface{}) valuePtrs is variadic: https://golang.org/ref/spec#Passing_arguments_to_..._parameters
 		//Scan copies the columns in the current row into the values pointed at by dest.
 		//The number of values in dest must be the same as the number of columns in Rows.
+		helper.Catch(err)
 		entry := make(map[string]interface{}) //map[]
 		fmt.Println(values)
 		for i, col := range columns {
@@ -85,9 +86,10 @@ func DetailPost(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < count; i++ {
 		valuePtrs[i] = &values[i] //we assign every pointer to every value
 	}
-	row.Scan(valuePtrs...) //Scan(dest ...interface{}) valuePtrs is variadic: https://golang.org/ref/spec#Passing_arguments_to_..._parameters
+	err = row.Scan(valuePtrs...) //Scan(dest ...interface{}) valuePtrs is variadic: https://golang.org/ref/spec#Passing_arguments_to_..._parameters
 	//Scan copies the columns in the current row into the values pointed at by dest.
 	//The number of values in dest must be the same as the number of columns in Rows.
+	helper.Catch(err)
 	entry := make(map[string]interface{}) //map[]
 	fmt.Println(values)
 	for i, col := range columns {
@@ -132,7 +134,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	defer query.Close() //DONT FORGET TO CLOSE THE QUERY
 
-	helper.RespondwithJSON(w, http.StatusCreated, map[string]string{"message": "succesfully created"})
+	helper.RespondwithJSON(w, http.StatusCreated, map[string]string{"message": "successfully created"})
 }
 
 func UpdatePost(w http.ResponseWriter, req *http.Request) {
@@ -147,7 +149,7 @@ func UpdatePost(w http.ResponseWriter, req *http.Request) {
 
 	defer query.Close()
 
-	helper.RespondwithJSON(w, http.StatusOK, map[string]string{"message": "update succesfully"})
+	helper.RespondwithJSON(w, http.StatusOK, map[string]string{"message": "update successfully"})
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
@@ -160,6 +162,6 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 	helper.Catch(er)
 	defer query.Close()
 
-	helper.RespondwithJSON(w, http.StatusOK, map[string]string{"message": "deleted succesfully"})
+	helper.RespondwithJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully"})
 
 }

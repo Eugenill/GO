@@ -17,24 +17,26 @@ var route *chi.Mux // server is a Mux object from Chi
 
 //constants for the db
 const (
-	dbName = "go-mysql-crud"
+	dbName = "go-api-sql"
+	dbUser = "*******"
 	dbPass = "*******"
 	dbHost = "localhost"
-	dbPort = "3306" //TCP - MySQL clients to the MySQL server (MySQL Protocol)
+	dbPort = "5432"
 )
 
 /*
+   1. Create SQL Database
 
-   CREATE DATABASE IF NOT EXISTS `go-mysql-crud` !40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
-   USE `go-mysql-crud`;
-    Create table for `posts`
+   CREATE DATABASE IF NOT EXISTS go-api-sql ;
+   \connect go-api-sql;
 
-   DROP TABLE IF EXISTS `posts`;
-   CREATE TABLE `posts` (
-     `id` int(11) NOT NULL AUTO_INCREMENT,
-     `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-     `content` longtext COLLATE utf8_unicode_ci NOT NULL,
-     PRIMARY KEY (`id`)
+   2. Create table for `posts`
+
+   DROP TABLE IF EXISTS posts;
+   CREATE TABLE posts (
+     id INT NOT NULL PRIMARY KEY,
+     title VARCHAR(100) NOT NULL,
+     content TEXT NOT NULL
    );
 */
 
@@ -45,14 +47,14 @@ func init() {
 	route.Use(middleware.Recoverer) //Recoverer is a middleware that recovers from panics, logs the panic (and a
 	// backtrace), and returns a HTTP 500 (Internal Server Error) status if
 	// possible. Recoverer prints a request ID if one is provided.
-	dbSource := fmt.Sprintf("root:%s@tcp(%s:%s)/%s?charset=utf8", dbPass, dbHost, dbPort, dbName) //%s for strings, %d for int
-	//username:password@protocol(address)/dbname?param=value
-	var err error                                  //error var
-	handlers.DB, err = sql.Open("mysql", dbSource) //Create the sql db with the name: "mysql" and the source
+	dbSource := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", dbHost, dbPort, dbName, dbUser, dbPass) //%s for strings, %d for int
+	var err error                                                                                                                    //error var
+	handlers.DB, err = sql.Open("postgres", dbSource)                                                                                //Create the sql db with the name: "mysql" and the source
 	helper.Catch(err)
 }
 
 func main() {
 	router.SetEndpoints(route)
-	http.ListenAndServe(":8000", helper.Logger(route))
+	err := http.ListenAndServe(":8000", helper.Logger(route))
+	helper.Catch(err)
 }
